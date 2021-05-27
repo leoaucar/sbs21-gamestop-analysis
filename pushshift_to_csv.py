@@ -4,7 +4,7 @@ import pandas as pd
 import datetime as dt
 
 def utc_to_local(utc_dt):
-    return utc_dt.replace(tzinfo=timezone.utc).astimezone(tz=None)
+    return pd.to_datetime(utc_dt, unit='s')
 
 api = PushshiftAPI()
 start_epoch = int(dt.datetime(2021, 1, 10).timestamp())
@@ -20,5 +20,6 @@ gen = api.search_submissions(
 
 df = pd.DataFrame([obj.d_ for obj in gen])
 df = df[['id', 'author', 'title', 'url', 'created_utc', 'num_comments' ]]
+df['created_utc_converted'] = df['created_utc'].apply(utc_to_local)
 
 df.to_csv('posts_jan_feb.csv', index=False)
